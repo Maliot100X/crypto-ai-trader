@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  crypto-trader-bot:
+    build: .
+    container_name: crypto-ai-trader
+    environment:
+      BINANCE_API_KEY: ${BINANCE_API_KEY}
+      BINANCE_SECRET_KEY: ${BINANCE_SECRET_KEY}
+      OPENAI_OAUTH_CLIENT_ID: ${OPENAI_OAUTH_CLIENT_ID}
+      OPENAI_OAUTH_CLIENT_SECRET: ${OPENAI_OAUTH_CLIENT_SECRET}
+      OPENAI_REDIRECT_URI: ${OPENAI_REDIRECT_URI}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+    restart: always
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config
+    networks:
+      - crypto-network
+
+  crypto-dashboard:
+    image: node:18-alpine
+    container_name: crypto-dashboard
+    working_dir: /app
+    volumes:
+      - ./dashboard:/app
+    ports:
+      - "3000:3000"
+    command: npm run dev
+    networks:
+      - crypto-network
+
+networks:
+  crypto-network:
+    driver: bridge
