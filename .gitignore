@@ -3,60 +3,32 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
+.venv/
 venv/
 env/
-ENV/
-env.bak/
-venv.bak/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+
+# Node
+node_modules/
+.next/
+out/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-.DS_Store
 
-# Environment variables
-.env
-.env.local
-.env.*.local
+# Docker
+docker-compose.override.yml
 
-# Logs
-logs/
+# Cache
+.skill_cache/
 *.log
-
-# Node (for dashboard)
-node_modules/
-dist/
-build/
-.next/
-out/
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Credentials (NEVER commit these)
-config/settings_local.py
-credentials.json
-secrets.json
+.DS_Store

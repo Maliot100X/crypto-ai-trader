@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # Agent Runtime + API Server
+  agent-runtime:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.agent
+    ports:
+      - "8080:8080"
+    env_file:
+      - ../.env
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - solana-trader
+
+  # Dashboard (Next.js)
+  dashboard:
+    build:
+      context: ../dashboard
+      dockerfile: ../docker/Dockerfile.dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://agent-runtime:8080
+    depends_on:
+      - agent-runtime
+    restart: unless-stopped
+    networks:
+      - solana-trader
+
+  # Telegram Bot
+  telegram-bot:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.agent
+    command: python -m telegram_bot
+    env_file:
+      - ../.env
+    depends_on:
+      - agent-runtime
+    restart: unless-stopped
+    networks:
+      - solana-trader
+
+  # PostgreSQL
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: solana_trader
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - solana-trader
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - solana-trader
+
+  # Ollama (Local LLM)
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - solana-trader
+
+volumes:
+  postgres_data:
+  redis_data:
+  ollama_data:
+
+networks:
+  solana-trader:
+    driver: bridge
